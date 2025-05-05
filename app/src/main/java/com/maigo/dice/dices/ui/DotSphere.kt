@@ -3,16 +3,34 @@
 package com.maigo.dice.dices.ui
 
 import android.opengl.GLES20
+import android.opengl.Matrix
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import kotlin.math.*
 
-class DotSphere(private val radius: Float = 0.11f, stacks: Int = 10, slices: Int = 10) {
+class DotSphere(private val radius: Float = 0.11f, stacks: Int = 30, slices: Int = 30) {
 
     private val vertexBuffer: FloatBuffer
     private val vertexCount: Int
     private val program: Int
+
+    private val vertexShader = """
+        uniform mat4 uMVPMatrix;
+        attribute vec4 vPosition;
+        void main() {
+            gl_PointSize = 8.0;
+            gl_Position = uMVPMatrix * vPosition;
+        }
+    """.trimIndent()
+
+    private val fragmentShader = """
+        precision mediump float;
+        uniform vec4 vColor;
+        void main() {
+            gl_FragColor = vColor;
+        }
+    """.trimIndent()
 
     init {
         val vertices = mutableListOf<Float>()
@@ -35,25 +53,9 @@ class DotSphere(private val radius: Float = 0.11f, stacks: Int = 10, slices: Int
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
             .apply {
-                for (v in vertices) put(v)
+                put(vertices.toFloatArray())
                 position(0)
             }
-
-        val vertexShader = """
-            uniform mat4 uMVPMatrix;
-            attribute vec4 vPosition;
-            void main() {
-                gl_Position = uMVPMatrix * vPosition;
-            }
-        """.trimIndent()
-
-        val fragmentShader = """
-            precision mediump float;
-            uniform vec4 vColor;
-            void main() {
-                gl_FragColor = vColor;
-            }
-        """.trimIndent()
 
         program = GLES20.glCreateProgram().also {
             GLES20.glAttachShader(it, loadShader(GLES20.GL_VERTEX_SHADER, vertexShader))
@@ -70,16 +72,19 @@ class DotSphere(private val radius: Float = 0.11f, stacks: Int = 10, slices: Int
         val mvpMatrixHandle = GLES20.glGetUniformLocation(program, "uMVPMatrix")
 
         val modelMatrix = FloatArray(16)
-        android.opengl.Matrix.setIdentityM(modelMatrix, 0)
-        android.opengl.Matrix.translateM(modelMatrix, 0, center[0], center[1], center[2])
+        Matrix.setIdentityM(modelMatrix, 0)
+        Matrix.translateM(modelMatrix, 0, center[0], center[1], center[2])
         val finalMatrix = FloatArray(16)
-        android.opengl.Matrix.multiplyMM(finalMatrix, 0, mvpMatrix, 0, modelMatrix, 0)
+        Matrix.multiplyMM(finalMatrix, 0, mvpMatrix, 0, modelMatrix, 0)
 
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, finalMatrix, 0)
         GLES20.glUniform4f(colorHandle, 0f, 0f, 0f, 1f)
+
         GLES20.glEnableVertexAttribArray(positionHandle)
         GLES20.glVertexAttribPointer(positionHandle, 3, GLES20.GL_FLOAT, false, 0, vertexBuffer)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount)
+
+        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, vertexCount) // 変更点
+
         GLES20.glDisableVertexAttribArray(positionHandle)
     }
 

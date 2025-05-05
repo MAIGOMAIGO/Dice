@@ -16,6 +16,7 @@ class DiceGLView @JvmOverloads constructor(
 
     init {
         setEGLContextClientVersion(2)
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0)
         renderer = DiceRenderer()
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY

@@ -146,12 +146,12 @@ class Cube {
         val result = mutableListOf<FloatArray>()
 
         val dotCoords = arrayOf(
-            arrayOf(floatArrayOf(0f, 0f, 0.03f)), // 1
-            arrayOf(floatArrayOf(-0.3f, -0.3f, 0.03f), floatArrayOf(0.3f, 0.3f, 0.03f)), // 2
-            arrayOf(floatArrayOf(-0.3f, -0.3f, 0.03f), floatArrayOf(0f, 0f, 0.03f), floatArrayOf(0.3f, 0.3f, 0.03f)), // 3
-            arrayOf(floatArrayOf(-0.3f, -0.3f, 0.03f), floatArrayOf(0.3f, -0.3f, 0.03f), floatArrayOf(-0.3f, 0.3f, 0.03f), floatArrayOf(0.3f, 0.3f, 0.03f)), // 4
-            arrayOf(floatArrayOf(-0.3f, -0.3f, 0.03f), floatArrayOf(0.3f, -0.3f, 0.03f), floatArrayOf(0f, 0f, 0.03f), floatArrayOf(-0.3f, 0.3f, 0.03f), floatArrayOf(0.3f, 0.3f, 0.03f)), // 5
-            arrayOf(floatArrayOf(-0.3f, -0.4f, 0.03f), floatArrayOf(-0.3f, 0f, 0.03f), floatArrayOf(-0.3f, 0.4f, 0.03f), floatArrayOf(0.3f, -0.4f, 0.03f), floatArrayOf(0.3f, 0f, 0.03f), floatArrayOf(0.3f, 0.4f, 0.03f)) // 6
+            arrayOf(floatArrayOf(0f, 0f)), // 1
+            arrayOf(floatArrayOf(-0.3f, -0.3f), floatArrayOf(0.3f, 0.3f)), // 2
+            arrayOf(floatArrayOf(-0.3f, -0.3f), floatArrayOf(0f, 0f), floatArrayOf(0.3f, 0.3f)), // 3
+            arrayOf(floatArrayOf(-0.3f, -0.3f), floatArrayOf(0.3f, -0.3f), floatArrayOf(-0.3f, 0.3f), floatArrayOf(0.3f, 0.3f)), // 4
+            arrayOf(floatArrayOf(-0.3f, -0.3f), floatArrayOf(0.3f, -0.3f), floatArrayOf(0f, 0f), floatArrayOf(-0.3f, 0.3f), floatArrayOf(0.3f, 0.3f)), // 5
+            arrayOf(floatArrayOf(-0.3f, -0.4f), floatArrayOf(-0.3f, 0f), floatArrayOf(-0.3f, 0.4f), floatArrayOf(0.3f, -0.4f), floatArrayOf(0.3f, 0f), floatArrayOf(0.3f, 0.4f)) // 6
         )
 
         val normals = arrayOf(
@@ -165,12 +165,13 @@ class Cube {
         for (i in normals.indices) {
             val normal = normals[i]
             val faceIndex = faceDots[i] - 1
+            val baseOffset = 1.01f // 少し浮かせて確実に見えるように
             for (coord in dotCoords[faceIndex]) {
-                val (x, y, z) = coord
+                val (x, y) = coord
                 val pos = when {
-                    normal[0] != 0f -> floatArrayOf(normal[0] + z, y, x)
-                    normal[1] != 0f -> floatArrayOf(x, normal[1] + z, y)
-                    else -> floatArrayOf(x, y, normal[2] + z)
+                    normal[0] != 0f -> floatArrayOf(normal[0] * baseOffset, y, x)
+                    normal[1] != 0f -> floatArrayOf(x, normal[1] * baseOffset, y)
+                    else -> floatArrayOf(x, y, normal[2] * baseOffset)
                 }
                 result.add(pos)
             }

@@ -38,8 +38,12 @@ class DiceRenderer : GLSurfaceView.Renderer {
     private val mvpMatrix = FloatArray(16)
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        GLES20.glClearColor(0.2f, 0.2f, 0.2f, 1.0f)
+//        GLES20.glClearColor(0.2f, 0.2f, 0.2f, 1.0f)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+        GLES20.glDepthFunc(GLES20.GL_LEQUAL)
+
+        // 透明背景の設定がある場合
+        GLES20.glClearColor(0f, 0f, 0f, 0f) // 背景透明などの場合
         cube = Cube()
     }
 
