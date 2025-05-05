@@ -1,0 +1,15 @@
+<!-- fragment_dice.xml -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dice_overlay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#88000000"> <!-- 半透明の黒 -->
+
+    <com.maigo.dice.dices.ui.DiceGLView
+        android:id="@+id/dice_gl_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"/>
+
+</FrameLayout>
